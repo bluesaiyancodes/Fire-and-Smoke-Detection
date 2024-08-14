@@ -8,7 +8,7 @@
 ## Video Demonstration
 
 Check out the video demonstration of the application in action:
-
+![sample video](firesample.mov)
 
 
 ## Usage
