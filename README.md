@@ -5,6 +5,12 @@
 
 💡 This project demonstrates a demo application for detecting fire and smoke in images. The application allows users to select a directory of images, process them for fire and smoke detection, and visualize the results using a GUI built with PyQt. Additionally, the project integrates DINO-based attention maps for deeper insights into the regions the model is focusing on.
 
+## Video Demonstration
+
+Check out the video demonstration of the application in action:
+
+
+
 ## Usage
 
 ### 1. Clone the Repository
