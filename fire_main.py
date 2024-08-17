@@ -358,6 +358,8 @@ class FireSmokeDetectionApp(QMainWindow):
         with torch.no_grad():
             attentions = self.dinov2_model.get_last_selfattention(frame_resized)
 
+        print(attentions.shape)
+
         # Process the attention maps
         nh = attentions.shape[1]  # number of heads
         attentions = attentions[0, :, 0, 1:].reshape(nh, -1)  # Removing class token and reshaping
