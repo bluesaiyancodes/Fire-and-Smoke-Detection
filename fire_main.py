@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import torch
 import torch.nn as nn
+from sklearn.decomposition import PCA
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton,
                              QVBoxLayout, QWidget, QFileDialog, QSpinBox, QComboBox,
                              QCheckBox, QHBoxLayout, QFrame, QSlider, QGroupBox, QMessageBox, QSpacerItem, QSizePolicy)
@@ -358,7 +359,7 @@ class FireSmokeDetectionApp(QMainWindow):
         with torch.no_grad():
             attentions = self.dinov2_model.get_last_selfattention(frame_resized)
 
-        print(attentions.shape)
+        #print(f"preprocessed attn map: {attentions.shape}")
 
         # Process the attention maps
         nh = attentions.shape[1]  # number of heads
@@ -368,10 +369,15 @@ class FireSmokeDetectionApp(QMainWindow):
         h_featmap = frame_resized.shape[-1] // patch_size
 
         attentions = attentions.reshape(nh, w_featmap, h_featmap)
+        #print(f"reshaped attn map: {attentions.shape}")
         attentions = nn.functional.interpolate(attentions.unsqueeze(0), scale_factor=patch_size, mode="nearest")[0].cpu().numpy()
+        #print(f"interpolated attn map: {attentions.shape}")
+
 
         # Choose an attention head to visualize
         attention_map = attentions.mean(axis=0)  # Averaging over all heads for simplicity
+
+        print(f"final attn map: {attention_map.shape}")
 
         # Normalize the attention map for visualization
         attention_map -= attention_map.min()
@@ -381,9 +387,11 @@ class FireSmokeDetectionApp(QMainWindow):
 
         # Convert to color map for better visualization (3 channels)
         heatmap = cv2.applyColorMap(attention_map, cv2.COLORMAP_JET)
+        print(f"heatmap shape: {heatmap.shape}")
 
-        # Resize heatmap to match the original frame size
+        # Resize heatmap to match the frame size
         heatmap_resized = cv2.resize(heatmap, (frame.shape[1], frame.shape[0]))
+        print(f"heatmap resized shape: {heatmap_resized.shape}")
 
         # Get the alpha value from the PyQt slider
         alpha = self.alpha_slider.value() / 100.0
